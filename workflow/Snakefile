@@ -1,4 +1,27 @@
 # Main entrypoint of the workflow. 
-# Please follow the best practices: 
-# https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+
+##### set minimum snakemake version #####
+from snakemake.utils import min_version
+min_version("6.5.0")
+
+# Run as:
+# snakemake --snakefile ./send-data.smk --profile ./profile --configfile zenbanc_config.yml --use-singularity --cores --verbose
+#
+
+##### Load configuration #####
+configfile: "config/config.yml"
+
+
+##### Load rules #####
+include: "rules/common.smk"
+include: "rules/index.smk"
+include: "rules/encryption.smk"
+include: "rules/upload.smk"
+
+
+###### Main target rule ##########
+
+rule all:
+  input:
+      index = get_remote_path("index.tsv.c4gh"),
+      data = lambda _: [ get_remote_path(fname) for fname in aggregate_new_item_names() ]

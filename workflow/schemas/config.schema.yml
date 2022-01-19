@@ -1,0 +1,116 @@
+$schema: "https://json-schema.org/draft-06/schema#"
+description: Configuration schema for send-data workflow.
+properties:
+  request_id:
+    type: string
+    description: data request identifier
+  recipient_key:
+    type: string
+    description: Path to recipient's c4gh public key.  Must be within working directory tree.
+  repository_path:
+    type: string
+    description: Absolute path to the data repository.
+  master_keypair:
+    type: object
+    required:
+    - private
+    - public
+    properties:
+      private:
+        type: string
+        description: Path to master private key. Must be within repository_path directory tree.
+      public:
+        type: string
+        description: Path to master public key. Must be within repository_path directory tree.
+  sources:
+    type: object
+    properties:
+      extension:
+        type: string
+        default: ".tiff.c4gh"
+        pattern: "^(\\.[0-9A-z]+)+$"
+        description: Extension of source files to glob from source directories. Must start with '.'
+      base_dir:
+        type: string
+        default: "/"
+        description: >
+          Base path of file repository.  All paths in `items` list are relative to
+          this one.
+      items:
+        description: Paths to files (relative to `base_dir`) to be reencrypted and sent to recipient.
+        type: array
+        items:
+          type: string
+          description: Path to source file or directory. Directories will be globbed.
+    required:
+    - items
+  destination:
+    type: object
+    description: Destination of data
+    required:
+    - type
+    - connection
+    properties:
+      type:
+        type: string
+        descrition: Any of the [remote providers supported by snakemake](https://snakemake.readthedocs.io/en/v6.13.1/snakefiles/remote_files.html#remote-files).
+        enum:
+        - "AUTO"
+        - "AzBlob"
+        - "dropbox"
+        - "EGA"
+        - "FTP"
+        - "gfal"
+        - "gridftp"
+        - "GS"
+        - "HTTP"
+        - "iRODS"
+        - "NCBI"
+        - "S3"
+        - "SFTP"
+        - "webdav"
+        - "XRootD"
+      root_path:
+        type: string
+        description: Prefix path for destination. Content will be placed under this path.
+        default: "/"
+      connection:
+        type: object
+        description: >
+          Connection parameters for [Snakemake remote
+          provider](https://snakemake.readthedocs.io/en/v6.13.1/snakefiles/remote_files.html#remote-files).
+          Keys required/supported vary depending on the provider type.  See
+          the snakemake documentation for details.
+        example:
+          access_key_id: "MYACCESSKEY"
+          secret_access_key: "MYSECRET"
+          host: locahost:9000
+          verify: false
+required:
+- request_id
+- recipient_key
+- repository_path
+- master_keypair
+- sources
+- destination
+examples:
+- request_id: "12345"
+  recipient_key: ./recipient_key
+  repository_path: /mnt/rbd/data/sftp/fair-crcc/
+  master_keypair:
+    private: bbmri-key
+    public: bbmri-key.pub
+  sources:
+    extension: ".tiff.c4gh"
+    base_dir: "/path/to/repository"
+    items:
+    - some/directory/to/glob
+    - another/individual/file.tiff.c4gh
+  destination:
+    type: "S3"
+    root_path: "/data/destination/"
+    connection:  # all elements will be passed to the selected snakemake remote provider
+      access_key_id: "MYACCESSKEY"
+      secret_access_key: "MYSECRET"
+      host: locahost:9000
+      verify: false # don't verify ssl certificates

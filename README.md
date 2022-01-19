@@ -1,21 +1,27 @@
-# Snakemake workflow: `<name>`
+# Snakemake workflow: FAIR CRCC - send data
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
-[![GitHub actions status](https://github.com/<owner>/<repo>/workflows/Tests/badge.svg?branch=main)](https://github.com/<owner>/<repo>/actions?query=branch%3Amain+workflow%3ATests)
+[![GitHub actions status](https://github.com/crs4/fair-crcc-send-data/workflows/Tests/badge.svg?branch=main)](https://github.com/crs4/fair-crcc-send-data/actions?query=branch%3Amain+workflow%3ATests)
 
 
-A Snakemake workflow for `<description>`
+A Snakemake workflow for shipping data from the [CRC Cohort](https://www.bbmri-eric.eu/scientific-collaboration/colorectal-cancer-cohort/) to a
+destination approved through a successful [access request](https://www.bbmri-eric.eu/services/access-policies/).
+
+The CRC Cohort is a collection of clinical data and digital high-resolution
+digital pathology images pertaining to tumor cases.  The collection has been
+assembled from a number of participating biobanks and other partners through the
+[ADOPT BBMRI-ERIC](https://www.bbmri-eric.eu/scientific-collaboration/adopt-bbmri-eric/) project.
+
+Researchers interested in using the data for science can file an application for
+access.  If approved, the part of the dataset required for the planned and
+approved work can be copied to the requester's selected secure storage location
+(using this workflow).
 
 
 ## Usage
 
-The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=<owner>%2F<repo>).
+TODO
 
-If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) <repo>sitory and its DOI (see above).
+The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=crs4%2Ffair-crcc-send-data).
 
-# TODO
-
-* Replace `<owner>` and `<repo>` everywhere in the template (also under .github/workflows) with the correct `<repo>` name and owning user or organization.
-* Replace `<name>` with the workflow name (can be the same as `<repo>`).
-* Replace `<description>` with a description of what the workflow does.
-* The workflow will occur in the snakemake-workflow-catalog once it has been made public. Then the link under "Usage" will point to the usage instructions if `<owner>` and `<repo>` were correctly set.
+If you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this (original) fair-crcc-send-datasitory and its DOI (see above).
