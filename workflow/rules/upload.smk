@@ -5,6 +5,10 @@ rule upload_file:
     output:
         remote = get_remote_path("{filename}")
     shell:
-      """
-      cp --link --verbose {input:q} {output:q}
-      """
+        # Snakemake makes us locally copy the file from its
+        # "current" input path to a staging directory (the
+        # "output" path).  Rather than waste time actually
+        # making a copy of the file we create a hard link.
+        """
+        cp --link {input:q} {output:q}
+        """

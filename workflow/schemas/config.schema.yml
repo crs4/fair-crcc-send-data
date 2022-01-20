@@ -1,4 +1,4 @@
-$schema: "https://json-schema.org/draft-06/schema#"
+$schema: "https://json-schema.org/draft/2020-12/schema"
 description: Configuration schema for send-data workflow.
 properties:
   request_id:
@@ -7,37 +7,32 @@ properties:
   recipient_key:
     type: string
     description: Path to recipient's c4gh public key.  Must be within working directory tree.
-  repository_path:
-    type: string
-    description: Absolute path to the data repository.
-  master_keypair:
+  repository:
     type: object
-    required:
-    - private
-    - public
     properties:
-      private:
+      path:
         type: string
-        description: Path to master private key. Must be within repository_path directory tree.
-      public:
+        description: Absolute path to the data repository.
+      private_key:
         type: string
-        description: Path to master public key. Must be within repository_path directory tree.
+        description: Path to master private key. Must be relative to repository.path.
+      public_key:
+        type: string
+        description: Path to master public key. Must be relative to repository.path.
+    required:
+    - path
+    - private_key
+    - public_key
   sources:
     type: object
     properties:
-      extension:
+      glob_extension:
         type: string
         default: ".tiff.c4gh"
         pattern: "^(\\.[0-9A-z]+)+$"
         description: Extension of source files to glob from source directories. Must start with '.'
-      base_dir:
-        type: string
-        default: "/"
-        description: >
-          Base path of file repository.  All paths in `items` list are relative to
-          this one.
       items:
-        description: Paths to files (relative to `base_dir`) to be reencrypted and sent to recipient.
+        description: Paths to files (relative to `repository.path`) to be reencrypted and sent to recipient.
         type: array
         items:
           type: string
@@ -84,25 +79,23 @@ properties:
         example:
           access_key_id: "MYACCESSKEY"
           secret_access_key: "MYSECRET"
-          host: locahost:9000
+          host: http://localhost:9000
           verify: false
 required:
 - request_id
 - recipient_key
-- repository_path
-- master_keypair
+- repository
 - sources
 - destination
 examples:
 - request_id: "12345"
   recipient_key: ./recipient_key
-  repository_path: /mnt/rbd/data/sftp/fair-crcc/
-  master_keypair:
-    private: bbmri-key
-    public: bbmri-key.pub
+  repository:
+    path: "/mnt/rbd/data/sftp/fair-crcc/"
+    private_key: bbmri-key
+    public_key: bbmri-key.pub
   sources:
-    extension: ".tiff.c4gh"
-    base_dir: "/path/to/repository"
+    glob_extension: ".tiff.c4gh"
     items:
     - some/directory/to/glob
     - another/individual/file.tiff.c4gh
@@ -112,5 +105,5 @@ examples:
     connection:  # all elements will be passed to the selected snakemake remote provider
       access_key_id: "MYACCESSKEY"
       secret_access_key: "MYSECRET"
-      host: locahost:9000
+      host: http://localhost:9000
       verify: false # don't verify ssl certificates
