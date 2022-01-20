@@ -1,9 +1,6 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 description: Configuration schema for send-data workflow.
 properties:
-  request_id:
-    type: string
-    description: data request identifier
   recipient_key:
     type: string
     description: Path to recipient's c4gh public key.  Must be within working directory tree.
@@ -82,13 +79,11 @@ properties:
           host: http://localhost:9000
           verify: false
 required:
-- request_id
 - recipient_key
 - repository
 - sources
 - destination
 examples:
-- request_id: "12345"
   recipient_key: ./recipient_key
   repository:
     path: "/mnt/rbd/data/sftp/fair-crcc/"
