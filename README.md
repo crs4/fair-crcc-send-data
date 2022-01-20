@@ -4,8 +4,11 @@
 [![GitHub actions status](https://github.com/crs4/fair-crcc-send-data/workflows/Tests/badge.svg?branch=main)](https://github.com/crs4/fair-crcc-send-data/actions?query=branch%3Amain+workflow%3ATests)
 
 
-A Snakemake workflow for shipping data from the [CRC Cohort](https://www.bbmri-eric.eu/scientific-collaboration/colorectal-cancer-cohort/) to a
-destination approved through a successful [access request](https://www.bbmri-eric.eu/services/access-policies/).
+A Snakemake workflow for securely sharing Crypt4GH-encrypted sensitive data from
+the [CRC
+Cohort](https://www.bbmri-eric.eu/scientific-collaboration/colorectal-cancer-cohort/)
+to a destination approved through a successful [access
+request](https://www.bbmri-eric.eu/services/access-policies/).
 
 The CRC Cohort is a collection of clinical data and digital high-resolution
 digital pathology images pertaining to tumor cases.  The collection has been
@@ -19,6 +22,14 @@ approved work can be copied to the requester's selected secure storage location
 
 
 ## Usage
+
+### Example
+
+    mkdir request_1234 && cd request_1234
+    # write the configuration, specifying crypt4gh keys, destination and files to send
+    snakemake --snakefile ../fair-crcc-send-data/workflow/Snakefile --profile ../profile/ --configfile config.yml --use-singularity --cores
+
+
 
 TODO
 
