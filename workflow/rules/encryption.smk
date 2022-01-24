@@ -37,7 +37,7 @@ rule reencrypt:
     not reencrypt the data, but creates a new file that can *also* be decrypted
     using the recipient's key.
     """
-    input: lambda w: get_original_file_path(w.filename + '.c4gh')
+    input: lambda w: get_original_file_path(f"{w.filename}.c4gh")
     output:
         crypt = temp("reencrypted/{filename}.c4gh"),
         checksum = "reencrypted/{filename}.c4gh.sha"
