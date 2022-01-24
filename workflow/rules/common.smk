@@ -9,8 +9,8 @@ from snakemake.utils import validate
 #### Configuration ####
 validate(config, schema="../schemas/config.schema.yml") # also sets default values
 
-source_ext = config['sources'].get('glob_extension', '.tiff.c4gh')
-if not source_ext.startswith('.'):
+glob_ext = config['sources'].get('glob_extension', '.tiff.c4gh')
+if not glob_ext.startswith('.'):
     raise ValueError("sources.glob_extension must start with a '.'")
 
 
@@ -86,13 +86,13 @@ def glob_source_paths() -> List[Path]:
     source_paths = [ Path(p) for p in config['sources']['items'] ]
     if any(p.is_absolute() for p in source_paths):
         raise ValueError("Source paths must be relative to repository.path (absolute paths found).")
-    # glob any directories for files that end with source_ext
+    # glob any directories for files that end with glob_ext
     try:
         cwd = os.getcwd()
         os.chdir(str(base_dir))
         source_files = \
-            [ slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{source_ext}") ] + \
-            [ p for p in source_paths if p.is_file() and p.match(f"*{source_ext}") ]
+            [ slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{glob_ext}") ] + \
+            [ p for p in source_paths if p.is_file() and p.match("*.c4gh") ]
     finally:
         os.chdir(cwd)
     return source_files
