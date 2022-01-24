@@ -32,12 +32,6 @@ rule encrypt_index:
         """
 
 
-def get_original_file_path(wildcard):
-    original_name = get_original_item_name(wildcard.filename + '.c4gh')
-    full_path = get_repository_path() / original_name
-    return str(full_path)
-
-
 rule reencrypt:
     """
     Reencrypt the c4gh-encrypted data files to be sent using the recipient's
@@ -45,7 +39,7 @@ rule reencrypt:
     not reencrypt the data, but creates a new file that can *also* be decrypted
     using the recipient's key.
     """
-    input: get_original_file_path
+    input: lambda w: get_original_file_path(w.filename + '.c4gh')
     output:
         crypt = temp("reencrypted/{filename}.c4gh"),
         checksum = "reencrypted/{filename}.c4gh.sha"

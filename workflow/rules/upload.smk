@@ -4,6 +4,8 @@ rule upload_file:
         "reencrypted/{filename}"
     output:
         remote = get_remote_path("{filename}")
+    log:
+        "logs/upload-{filename}.log"
     shell:
         # Snakemake makes us locally copy the file from its
         # "current" input path to a staging directory (the
