@@ -10,6 +10,15 @@ Cohort](https://www.bbmri-eric.eu/scientific-collaboration/colorectal-cancer-coh
 to a destination approved through a successful [access
 request](https://www.bbmri-eric.eu/services/access-policies/).
 
+The recommendation is to create a directory for the request that has been
+approved;  it will be used as the working directory for the run.  Copy there the
+recipient's crypt4gh key and prepare the run configuration.  The configuration
+will specify the repository, the destination of the data, and the list of
+files/directories to transfer.
+
+
+## What's the CRC Cohort?
+
 The CRC Cohort is a collection of clinical data and digital high-resolution
 digital pathology images pertaining to tumor cases.  The collection has been
 assembled from a number of participating biobanks and other partners through the
@@ -26,9 +35,33 @@ approved work can be copied to the requester's selected secure storage location
 ### Example
 
     mkdir request_1234 && cd request_1234
-    # write the configuration, specifying crypt4gh keys, destination and files to send
+    # Now write the configuration, specifying crypt4gh keys, destination and files to send.
+    # Finally, execute workflow.
     snakemake --snakefile ../fair-crcc-send-data/workflow/Snakefile --profile ../profile/ --configfile config.yml --use-singularity --cores
 
+
+#### Run configuration example
+
+```
+recipient_key: ./recipient_key
+repository:
+  path: "/mnt/rbd/data/sftp/fair-crcc/"
+  private_key: bbmri-key
+  public_key: bbmri-key.pub
+sources:
+  glob_extension: ".tiff.c4gh"
+  items:
+  - some/directory/to/glob
+  - another/individual/file.tiff.c4gh
+destination:
+  type: "S3"
+  root_path: "my-bucket/prefix/"
+  connection:  # all elements will be passed to the selected snakemake remote provider
+    access_key_id: "MYACCESSKEY"
+    secret_access_key: "MYSECRET"
+    host: http://localhost:9000
+    verify: false # don't verify ssl certificates
+```
 
 
 TODO
