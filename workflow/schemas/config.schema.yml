@@ -47,7 +47,6 @@ properties:
         type: string
         descrition: Any of the [remote providers supported by snakemake](https://snakemake.readthedocs.io/en/v6.13.1/snakefiles/remote_files.html#remote-files).
         enum:
-        - "AUTO"
         - "AzBlob"
         - "dropbox"
         - "EGA"
@@ -96,7 +95,7 @@ examples:
     - another/individual/file.tiff.c4gh
   destination:
     type: "S3"
-    root_path: "/data/destination/"
+    root_path: "bucket/subpath/"
     connection:  # all elements will be passed to the selected snakemake remote provider
       access_key_id: "MYACCESSKEY"
       secret_access_key: "MYSECRET"

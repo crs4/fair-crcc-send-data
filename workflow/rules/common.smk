@@ -1,7 +1,7 @@
 
 
 from pathlib import Path
-from typing import List
+from typing import List, Mapping
 
 from snakemake.utils import validate
 
@@ -30,20 +30,54 @@ if workflow.use_singularity:
     workflow.singularity_args += f" --bind {config['repository']['path']}:{config['repository']['path']}:{mount_options}"
 
 
-from snakemake.remote.S3 import RemoteProvider as S3RemoteProvider
-# TODO:  generalize to different types connection
-RP = S3RemoteProvider(**config['destination']['connection'])
-
-
 ##### Helper functions #####
 
-def get_repository_path() -> Path:
-    return Path(config['repository']['path'])
+from snakemake.remote import AbstractRemoteProvider
+
+def create_remote_provider(destination_config: Mapping[str, str]) -> AbstractRemoteProvider:
+    """
+    Create a snakemake remote provider from config['destination'].
+    """
+    # LP: The snakemake.remote.AutoRemoteProvider seems like the ideal solution
+    # for the problem of easily mapping a destination type to a concrete
+    # RemoteProvider class.  However, as of snakemake v6.12.3 I was not able to
+    # get it work.  So, we provide our own implementation here.
+    import importlib
+    ProviderMap = {
+        "azblob": "AzBlob",
+        "dropbox": "dropbox",
+        "ega": "EGA",
+        "ftp": "FTP",
+        "gfal": "gfal",
+        "gridftp": "gridftp",
+        "gs": "GS",
+        "http": "HTTP",
+        "irods": "iRODS",
+        "ncbi": "NCBI",
+        "s3": "S3",
+        "sftp": "SFTP",
+        "webdav": "",
+        "xrootd": "XRootD",
+    }
+
+    destination_type = destination_config['type'].lower()
+    module_name = f"snakemake.remote.{ProviderMap[destination_type]}"
+    provider_module = importlib.import_module(module_name)
+    return provider_module.RemoteProvider(**destination_config['connection'])
+
+
+# Create the remote provider for the results.  This object is used by
+# the get_remote_path function
+RProvider = create_remote_provider(config['destination'])
 
 
 def get_remote_path(path: str):
     destination_root = Path(config['destination']['root_path'])
-    return RP.remote(str(destination_root / path))
+    return RProvider.remote(str(destination_root / path), **config['destination']['connection'])
+
+
+def get_repository_path() -> Path:
+    return Path(config['repository']['path'])
 
 
 def glob_source_paths() -> List[Path]:
