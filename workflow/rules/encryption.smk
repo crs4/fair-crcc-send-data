@@ -20,8 +20,6 @@ rule encrypt_index:
         recipient_key = config['recipient_key'],
         master_pk = str(get_repository_path() / config['repository']['private_key']),
         master_pubk = str(get_repository_path() / config['repository']['public_key'])
-    container:
-        "docker://ilveroluca/crypt4gh:1.5"
     shell:
         """
         crypt4gh encrypt \
@@ -54,8 +52,6 @@ rule reencrypt:
         master_pubk = str(get_repository_path() / config['repository']['public_key'])
     resources:
         mem_mb = 1024 # guessed and probably overestimated
-    container:
-        "docker://ilveroluca/crypt4gh:1.5"
     shell:
         #Do we need to create the output directory??
         # mkdir -p $(dirname {output.crypt}) $(dirname {output.checksum}) &&

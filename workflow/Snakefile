@@ -8,6 +8,8 @@ min_version("6.5.0")
 # snakemake --snakefile ./Snakefile --profile ./profile --configfile request_123_config.yml --use-singularity --cores
 #
 
+container: "docker://ilveroluca/crypt4gh:1.5"
+
 ##### Load rules #####
 include: "rules/common.smk"
 include: "rules/index.smk"
