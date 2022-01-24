@@ -1,5 +1,6 @@
 
 
+import os
 from pathlib import Path
 from typing import List, Mapping
 
@@ -27,7 +28,7 @@ if workflow.use_singularity:
         mount_options = "rw"
     else:
         mount_options = "ro"
-    workflow.singularity_args += f" --bind {config['repository']['path']}:{config['repository']['path']}:{mount_options}"
+    workflow.singularity_args += f" --bind {os.path.abspath(config['repository']['path'])}:{os.path.abspath(config['repository']['path'])}:{mount_options}"
 
 
 ##### Helper functions #####
