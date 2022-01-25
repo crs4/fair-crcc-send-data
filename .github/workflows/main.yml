@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-
 jobs:
   Formatting:
     runs-on: ubuntu-latest
@@ -20,34 +19,33 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_SNAKEMAKE_SNAKEFMT: true
 
-  Linting:
-    runs-on: ubuntu-latest
-    # The linter erroneously picks up something as an error, so we ignore its failure
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Lint workflow
-        uses: snakemake/snakemake-github-action@v1.24.0
-        with:
-          directory: .tests/test-1
-          snakefile: workflow/Snakefile
-          args: "--configfile .tests/test-1/config.yml --lint"
+  #Linting:
+  #  runs-on: ubuntu-latest
+  #  # The linter erroneously picks up something as an error, so we ignore its failure
+  #  continue-on-error: true
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - name: Lint workflow
+  #      uses: snakemake/snakemake-github-action@v1.24.0
+  #      with:
+  #        directory: .tests/test-1
+  #        snakefile: workflow/Snakefile
+  #        args: "--configfile .tests/test-1/config.yml --lint"
 
   Testing:
     runs-on: ubuntu-latest
-    # # temporarily disable this check
-    # needs:
-    #   - Formatting
+    needs:
+      - Formatting
     strategy:
       matrix:
         snakemake-version: ["6.12.3"]
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Install singularity
         run: |
-          curl --output /tmp/singularity-ce.deb --location https://github.com/sylabs/singularity/releases/download/v3.9.4/singularity-ce_3.9.4-focal_amd64.deb && \
+          curl --output /tmp/singularity-ce.deb --location \
+              https://github.com/sylabs/singularity/releases/download/v3.9.4/singularity-ce_3.9.4-focal_amd64.deb && \
           sudo apt update -y && \
           sudo apt install -y /tmp/singularity-ce.deb
 
@@ -59,7 +57,6 @@ jobs:
           channel-priority: true
           miniforge-variant: "Mambaforge"
           miniforge-version: "4.11.0-0"
-          #activate-environment: test
           use-mamba: true
 
       - name: start minio
@@ -89,16 +86,17 @@ jobs:
         run: pip install crypt4gh
 
       # must run snakemake "manually" (rather than through the action) to allow
-      # it to see minio on localhost
+      # it to see minio on localhost and to work properly with singularity
       - name: Run workflow
         shell: bash -l {0}
         run: |
-          snakemake --directory .tests/test-1 --configfile .tests/test-1/config.yml --snakefile workflow/Snakefile --use-singularity --verbose --cores
+          snakemake --directory .tests/test-1 \
+                    --configfile .tests/test-1/config.yml \
+                    --snakefile workflow/Snakefile \
+                    --use-singularity --verbose --cores
 
       - name: Validate output
         shell: bash -l {0}
         run: |
           cd .tests/test-1 && \
           python validate.py
-
-
