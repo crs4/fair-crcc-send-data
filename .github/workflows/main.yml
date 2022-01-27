@@ -28,9 +28,9 @@ jobs:
   #    - name: Lint workflow
   #      uses: snakemake/snakemake-github-action@v1.24.0
   #      with:
-  #        directory: .tests/test-1
+  #        directory: .tests/integration/test-1
   #        snakefile: workflow/Snakefile
-  #        args: "--configfile .tests/test-1/config.yml --lint"
+  #        args: "--configfile .tests/integration/test-1/config.yml --lint"
 
   Testing:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
           use-mamba: true
 
       - name: start minio
-        run: docker-compose -f .tests/docker-compose.yml up -d
+        run: docker-compose -f .tests/integration/docker-compose.yml up -d
 
       - name: wait for minio
         run: |
@@ -90,13 +90,13 @@ jobs:
       - name: Run workflow
         shell: bash -l {0}
         run: |
-          snakemake --directory .tests/test-1 \
-                    --configfile .tests/test-1/config.yml \
+          snakemake --directory .tests/integration/test-1 \
+                    --configfile .tests/integration/test-1/config.yml \
                     --snakefile workflow/Snakefile \
                     --use-singularity --verbose --cores
 
       - name: Validate output
         shell: bash -l {0}
         run: |
-          cd .tests/test-1 && \
+          cd .tests/integration/test-1 && \
           python validate.py
