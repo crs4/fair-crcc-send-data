@@ -17,12 +17,12 @@ def read_config(path: str) -> Mapping[str, Any]:
 
 
 def download_file(remote_name: str, local_dir: Path, dest_config: Mapping[str, Any]) -> Path:
-    if dest_config['type'].lower() != "s3":
-        raise NotImplementedError(f"Only S3 destinations are supported. "
-                                  "Configuration specifies {dest_config['type']}")
+    if dest_config['type'].lower() != 's3':
+        raise NotImplementedError("Only S3 destinations are supported. "
+                                  f"Configuration specifies {dest_config['type']}")
     if dest_config['root_path'].startswith('/'):
-        raise ValueError(f"root_path must not start with '/' "
-                         "(got value {dest_config['root_path']}")
+        raise ValueError("root_path must not start with '/' "
+                         f"(got value {dest_config['root_path']}")
 
     remote_path = Path(dest_config['root_path']) / remote_name
     bucket_name = remote_path.parts[0]
@@ -48,7 +48,7 @@ def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[
     path = download_file(remote_name, tmpdir, config['destination'])
     with open(path) as index_fp, tempfile.TemporaryFile() as output_fp:
         subprocess.check_call(
-            ["crypt4gh", "decrypt", "--sk", str(private_key)],
+            ['crypt4gh', 'decrypt', '--sk', str(private_key)],
             stdin=index_fp, stdout=output_fp)
 
         output_fp.seek(0)
@@ -56,17 +56,17 @@ def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[
 
 
 def fetch_index(private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> Path:
-    contents = fetch_and_decrypt_file("index.tsv.c4gh", private_key, config, tmpdir)
-    index = [line.split("\t") for line in contents.decode().splitlines()]
+    contents = fetch_and_decrypt_file('index.tsv.c4gh', private_key, config, tmpdir)
+    index = [line.split('\t') for line in contents.decode().splitlines()]
     return index
 
 
 def main():
-    private_key = Path("test.sec")
-    with tempfile.TemporaryDirectory(prefix="test_") as d:
+    private_key = Path('test.sec')
+    with tempfile.TemporaryDirectory(prefix='test_') as d:
         tmpdir = Path(d)
-        cfg = read_config("./config.yml")
-        test_file = Path(cfg['repository']['path']) / "test-file.txt"
+        cfg = read_config('./config.yml')
+        test_file = Path(cfg['repository']['path']) / 'test-file.txt'
 
         # Fetch and decrypt index.  Verify that its contents seem reasonable
         index = fetch_index(private_key, cfg, tmpdir)
@@ -75,7 +75,7 @@ def main():
         index_entry = index[0]
         assert len(index_entry) == 3, f"{len(index_entry)} != 3"
         assert index_entry[0].endswith('.c4gh'), f"{index_entry[0]} does not end with .c4gh"
-        assert index_entry[1].endswith(str(test_file.name) + ".c4gh"), f"{index_entry[1]} does not end with test file name"
+        assert index_entry[1].endswith(test_file.name + '.c4gh'), f"{index_entry[1]} does not end with test file name"
 
         data = fetch_and_decrypt_file(index_entry[0], private_key, cfg, tmpdir).decode()
         print("Fetched and decrypted data file", index_entry[0], file=sys.stderr)
