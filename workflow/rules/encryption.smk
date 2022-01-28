@@ -51,9 +51,9 @@ rule reencrypt:
         master_pk = str(get_repository_path() / config['repository']['private_key']),
         master_pubk = str(get_repository_path() / config['repository']['public_key'])
     resources:
-        mem_mb = 1024 # guessed and probably overestimated
+        mem_mb = 1024  # guessed and probably overestimated
     shell:
-        #Do we need to create the output directory??
+        # Do we need to create the output directory??
         # mkdir -p $(dirname {output.crypt}) $(dirname {output.checksum}) &&
         """
         crypt4gh reencrypt \

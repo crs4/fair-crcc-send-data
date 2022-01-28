@@ -2,15 +2,18 @@
 
 import os
 from pathlib import Path
+from threading import Lock
 from typing import Iterable, Mapping
 
+from snakemake.remote import AbstractRemoteProvider
 from snakemake.utils import validate
 
-#### Configuration ####
-validate(config, schema="../schemas/config.schema.yml") # also sets default values
 
-glob_ext = config['sources'].get('glob_extension', '.tiff.c4gh')
-if not glob_ext.startswith('.'):
+#### Configuration ####
+validate(config, schema="../schemas/config.schema.yml")  # also sets default values
+
+glob_ext = config["sources"].get("glob_extension", ".tiff.c4gh")
+if not glob_ext.startswith("."):
     raise ValueError("sources.glob_extension must start with a '.'")
 
 
@@ -22,7 +25,7 @@ if workflow.use_singularity:
     # To avoid making the working directory read-only should it be inside
     # or the same path as the working directory, we check for this case
     # and if true we mount read-write.
-    repository = Path(config['repository']['path'])
+    repository = Path(config["repository"]["path"])
     work_dir = Path.cwd()
     if repository == work_dir or repository in work_dir.parents:
         mount_options = "rw"
@@ -33,11 +36,10 @@ if workflow.use_singularity:
 
 ##### Helper functions #####
 
-from snakemake.remote import AbstractRemoteProvider
 
 def create_remote_provider(destination_config: Mapping[str, str]) -> AbstractRemoteProvider:
     """
-    Create a snakemake remote provider from config['destination'].
+    Create a snakemake remote provider from config["destination"].
     """
     # LP: The snakemake.remote.AutoRemoteProvider seems like the ideal solution
     # for the problem of easily mapping a destination type to a concrete
@@ -61,29 +63,29 @@ def create_remote_provider(destination_config: Mapping[str, str]) -> AbstractRem
         "xrootd": "XRootD",
     }
 
-    destination_type = destination_config['type'].lower()
+    destination_type = destination_config["type"].lower()
     module_name = f"snakemake.remote.{ProviderMap[destination_type]}"
     provider_module = importlib.import_module(module_name)
-    return provider_module.RemoteProvider(**destination_config['connection'])
+    return provider_module.RemoteProvider(**destination_config["connection"])
 
 
 # Create the remote provider for the results.  This object is used by
 # the get_remote function
-RProvider = create_remote_provider(config['destination'])
+RProvider = create_remote_provider(config["destination"])
 
 
 def get_remote(path: str):
-    destination_root = Path(config['destination']['root_path'])
-    return RProvider.remote(destination_root / path, **config['destination']['connection'])
+    destination_root = Path(config["destination"]["root_path"])
+    return RProvider.remote(destination_root / path, **config["destination"]["connection"])
 
 
 def get_repository_path() -> Path:
-    return Path(config['repository']['path'])
+    return Path(config["repository"]["path"])
 
 
 def glob_source_paths() -> Iterable[Path]:
     base_dir = get_repository_path()
-    source_paths = [ Path(p) for p in config['sources']['items'] ]
+    source_paths = [Path(p) for p in config["sources"]["items"]]
     if any(p.is_absolute() for p in source_paths):
         raise ValueError("Source paths must be relative to repository.path (absolute paths found).")
     # glob any directories for files that end with glob_ext
@@ -91,8 +93,8 @@ def glob_source_paths() -> Iterable[Path]:
         cwd = os.getcwd()
         os.chdir(base_dir)
         source_files = \
-            [ slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{glob_ext}") ] + \
-            [ p for p in source_paths if p.is_file() and p.match("*.c4gh") ]
+            [slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{glob_ext}")] + \
+            [p for p in source_paths if p.is_file() and p.match("*.c4gh")]
     finally:
         os.chdir(cwd)
     return source_files
@@ -106,7 +108,7 @@ def get_all_new_item_names() -> Iterable[str]:
     Can only be used in `input:` sections as it accesses checkpoints.
     """
     with checkpoints.gen_rename_index.get().output.index.open() as f:
-        return [ line.split("\t", 1)[0] for line in f ]
+        return [line.split("\t", 1)[0] for line in f]
 
 
 def get_original_item_name(new_name: str) -> str:
@@ -116,12 +118,12 @@ def get_original_item_name(new_name: str) -> str:
 
     Can only be used in `input:` sections as it accesses checkpoints.
     """
-    global _gRenameIndexCache # defined in index.smk
+    global _gRenameIndexCache  # defined in index.smk
     with _gRenameIndexLock:
         if _gRenameIndexCache is None:
             with checkpoints.gen_rename_index.get().output.index.open() as f:
                 # each line in the file is a tab-separated tuple (new name, original name)
-                _gRenameIndexCache = dict(line.rstrip('\n').split('\t', 1) for line in f)
+                _gRenameIndexCache = dict(line.rstrip("\n").split("\t", 1) for line in f)
     return _gRenameIndexCache[new_name]
 
 
@@ -148,6 +150,5 @@ def get_original_file_path(new_filename: str) -> Path:
 # in snakemake rules.  Since I'm in doubt we'll protect write accesses with a
 # threading.Lock
 
-from threading import Lock
 _gRenameIndexLock = Lock()
 _gRenameIndexCache = None

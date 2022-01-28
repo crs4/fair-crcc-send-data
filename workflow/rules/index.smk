@@ -17,7 +17,7 @@ checkpoint gen_rename_index:
     log:
         "logs/base_index.tsv.log"
     params:
-        source_items = lambda _: [ str(path) for path in source_files ],
+        source_items = lambda _: [path for path in source_files],
     script:
         "../scripts/gen_rename_index.py"
 
