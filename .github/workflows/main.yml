@@ -18,6 +18,7 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_SNAKEMAKE_SNAKEFMT: true
+          SNAKEMAKE_SNAKEFMT_CONFIG_FILE: "pyproject.toml"
 
   #Linting:
   #  runs-on: ubuntu-latest
