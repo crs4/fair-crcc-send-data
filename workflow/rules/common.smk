@@ -1,5 +1,3 @@
-
-
 import os
 from pathlib import Path
 from threading import Lock
@@ -31,7 +29,11 @@ if workflow.use_singularity:
         mount_options = "rw"
     else:
         mount_options = "ro"
-    workflow.singularity_args += f" --bind {os.path.abspath(config['repository']['path'])}:{os.path.abspath(config['repository']['path'])}:{mount_options}"
+    workflow.singularity_args += (
+        " --bind "
+        f"{os.path.abspath(config['repository']['path'])}:"
+        f"{os.path.abspath(config['repository']['path'])}:{mount_options}"
+    )
 
 
 ##### Helper functions #####
@@ -46,6 +48,7 @@ def create_remote_provider(destination_config: Mapping[str, str]) -> AbstractRem
     # RemoteProvider class.  However, as of snakemake v6.12.3 I was not able to
     # get it work.  So, we provide our own implementation here.
     import importlib
+
     ProviderMap = {
         "azblob": "AzBlob",
         "dropbox": "dropbox",
@@ -92,9 +95,9 @@ def glob_source_paths() -> Iterable[Path]:
     try:
         cwd = os.getcwd()
         os.chdir(base_dir)
-        source_files = \
-            [slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{glob_ext}")] + \
-            [p for p in source_paths if p.is_file() and p.match("*.c4gh")]
+        source_files = [
+            slide for p in source_paths if p.is_dir() for slide in p.rglob(f"*{glob_ext}")
+        ] + [p for p in source_paths if p.is_file() and p.match("*.c4gh")]
     finally:
         os.chdir(cwd)
     return source_files

@@ -1,11 +1,11 @@
 
 rule upload_file:
     input:
-        "reencrypted/{filename}"
+        "reencrypted/{filename}",
     output:
-        remote = get_remote("{filename}")
+        remote=get_remote("{filename}"),
     log:
-        "logs/upload-{filename}.log"
+        "logs/upload-{filename}.log",
     shell:
         # Snakemake makes us locally copy the file from its
         # "current" input path to a staging directory (the
