@@ -40,19 +40,19 @@ rule reencrypt:
     input:
         lambda w: get_original_file_path(f"{w.filename}.c4gh"),
     output:
-        crypt=temp("reencrypted/{filename}.c4gh"),
-        checksum="reencrypted/{filename}.c4gh.sha",
+        crypt = temp("reencrypted/{filename}.c4gh"),
+        checksum = "reencrypted/{filename}.c4gh.sha",
     log:
         "logs/{filename}.c4gh.log",
     benchmark:
         "benchmark/{filename}.c4gh.bench"
     params:
-        checksum_alg=256,
-        recipient_key=config["recipient_key"],
-        master_pk=get_repository_path() / config["repository"]["private_key"],
-        master_pubk=get_repository_path() / config["repository"]["public_key"],
+        checksum_alg = 256,
+        recipient_key = config["recipient_key"],
+        master_pk = get_repository_path() / config["repository"]["private_key"],
+        master_pubk = get_repository_path() / config["repository"]["public_key"],
     resources:
-        mem_mb=1024,  # guessed and probably overestimated
+        mem_mb = 1024,  # guessed and probably overestimated
     shell:
         # Do we need to create the output directory??
         # mkdir -p $(dirname {output.crypt}) $(dirname {output.checksum}) &&

@@ -3,7 +3,7 @@ rule upload_file:
     input:
         "reencrypted/{filename}",
     output:
-        remote=get_remote("{filename}"),
+        remote = get_remote("{filename}"),
     log:
         "logs/upload-{filename}.log",
     shell:

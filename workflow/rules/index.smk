@@ -15,11 +15,11 @@ checkpoint gen_rename_index:
         new name <tab> original name\n
     """
     output:
-        index="base_index.tsv",
+        index = "base_index.tsv",
     log:
         "logs/base_index.tsv.log",
     params:
-        source_items=lambda _: [path for path in source_files],
+        source_items = lambda _: [path for path in source_files],
     script:
         "../scripts/gen_rename_index.py"
 
@@ -33,10 +33,10 @@ rule final_index:
     column (new randomly generated file name).
     """
     input:
-        base_index=rules.gen_rename_index.output.index,
-        data_files=lambda _: expand("reencrypted/{filename}.sha", filename=get_all_new_item_names()),
+        base_index = rules.gen_rename_index.output.index,
+        data_files = lambda _: expand("reencrypted/{filename}.sha", filename=get_all_new_item_names()),
     output:
-        index="index.tsv",
+        index = "index.tsv",
     log:
         "logs/index.tsv.log",
     script:
