@@ -79,7 +79,7 @@ RProvider = create_remote_provider(config["destination"])
 
 def get_remote(path: str):
     destination_root = Path(config["destination"]["root_path"])
-    return RProvider.remote(destination_root / path, **config["destination"]["connection"])
+    return RProvider.remote(str(destination_root / path), **config["destination"]["connection"])
 
 
 def get_repository_path() -> Path:
