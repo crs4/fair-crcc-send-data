@@ -22,7 +22,7 @@ jobs:
 
   Testing:
     runs-on: ubuntu-latest
-    needs:
+    needs: {}
     strategy:
       matrix:
         snakemake-version: ["6.12.3"]
