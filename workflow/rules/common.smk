@@ -10,7 +10,7 @@ from snakemake.utils import validate
 #### Configuration ####
 validate(config, schema="../schemas/config.schema.yml")  # also sets default values
 
-glob_ext = config["sources"].get("glob_extension", ".tiff.c4gh")
+glob_ext = config["sources"].get("glob_extension", ".c4gh")
 if not glob_ext.startswith("."):
     raise ValueError("sources.glob_extension must start with a '.'")
 
