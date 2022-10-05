@@ -10,7 +10,7 @@ from snakemake.utils import validate
 #### Configuration ####
 validate(config, schema="../schemas/config.schema.yml")  # also sets default values
 
-glob_ext = config["sources"].get("glob_extension", ".tiff.c4gh")
+glob_ext = config["sources"].get("glob_extension", ".c4gh")
 if not glob_ext.startswith("."):
     raise ValueError("sources.glob_extension must start with a '.'")
 
@@ -23,17 +23,17 @@ if workflow.use_singularity:
     # To avoid making the working directory read-only should it be inside
     # or the same path as the working directory, we check for this case
     # and if true we mount read-write.
-    repository = Path(config["repository"]["path"])
+    repository = Path(config["repository"]["path"]).resolve()
     work_dir = Path.cwd()
     if repository == work_dir or repository in work_dir.parents:
         mount_options = "rw"
     else:
         mount_options = "ro"
-    workflow.singularity_args += (
-        " --bind "
-        f"{os.path.abspath(config['repository']['path'])}:"
-        f"{os.path.abspath(config['repository']['path'])}:{mount_options}"
-    )
+    workflow.singularity_args += ' '.join([
+        # Use --cleanenv to work around singularity exec overriding env
+        # vars from docker image with host values (https://github.com/sylabs/singularity/issues/533)
+        " --cleanenv",
+        f" --bind {repository}:{repository}:{mount_options}"])
 
 
 ##### Helper functions #####
