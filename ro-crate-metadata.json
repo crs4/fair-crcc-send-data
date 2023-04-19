@@ -1,0 +1,191 @@
+{
+    "@context": [
+        "https://w3id.org/ro/crate/1.1/context",
+        {
+            "GithubService": "https://w3id.org/ro/terms/test#GithubService",
+            "JenkinsService": "https://w3id.org/ro/terms/test#JenkinsService",
+            "PlanemoEngine": "https://w3id.org/ro/terms/test#PlanemoEngine",
+            "TestDefinition": "https://w3id.org/ro/terms/test#TestDefinition",
+            "TestInstance": "https://w3id.org/ro/terms/test#TestInstance",
+            "TestService": "https://w3id.org/ro/terms/test#TestService",
+            "TestSuite": "https://w3id.org/ro/terms/test#TestSuite",
+            "TravisService": "https://w3id.org/ro/terms/test#TravisService",
+            "definition": "https://w3id.org/ro/terms/test#definition",
+            "engineVersion": "https://w3id.org/ro/terms/test#engineVersion",
+            "instance": "https://w3id.org/ro/terms/test#instance",
+            "resource": "https://w3id.org/ro/terms/test#resource",
+            "runsOn": "https://w3id.org/ro/terms/test#runsOn"
+        }
+    ],
+    "@graph": [
+        {
+            "@id": "./",
+            "@type": "Dataset",
+            "datePublished": "2023-04-19T16:01:23+00:00",
+            "hasPart": [
+                {
+                    "@id": "workflow/Snakefile"
+                },
+                {
+                    "@id": "images/rulegraph.svg"
+                },
+                {
+                    "@id": ".tests/integration/"
+                },
+                {
+                    "@id": "workflow/"
+                },
+                {
+                    "@id": "config/"
+                },
+                {
+                    "@id": "workflow/rules/"
+                },
+                {
+                    "@id": "workflow/scripts/"
+                },
+                {
+                    "@id": "workflow/schemas/"
+                },
+                {
+                    "@id": "README.md"
+                },
+                {
+                    "@id": "LICENSE"
+                }
+            ],
+            "isBasedOn": "https://github.com/crs4/fair-crcc-send-data",
+            "license": "GPL-3.0",
+            "mainEntity": {
+                "@id": "workflow/Snakefile"
+            },
+            "mentions": [
+                {
+                    "@id": "#d070f960-d370-496b-b4c8-151e385033b0"
+                }
+            ],
+            "name": "fair-crcc-send-data"
+        },
+        {
+            "@id": "ro-crate-metadata.json",
+            "@type": "CreativeWork",
+            "about": {
+                "@id": "./"
+            },
+            "conformsTo": [
+                {
+                    "@id": "https://w3id.org/ro/crate/1.1"
+                },
+                {
+                    "@id": "https://w3id.org/workflowhub/workflow-ro-crate/1.0"
+                }
+            ]
+        },
+        {
+            "@id": "workflow/Snakefile",
+            "@type": [
+                "File",
+                "SoftwareSourceCode",
+                "ComputationalWorkflow"
+            ],
+            "image": {
+                "@id": "images/rulegraph.svg"
+            },
+            "name": "fair-crcc-send-data",
+            "programmingLanguage": {
+                "@id": "https://w3id.org/workflowhub/workflow-ro-crate#snakemake"
+            },
+            "url": "https://github.com/crs4/fair-crcc-send-data",
+            "version": "main"
+        },
+        {
+            "@id": "https://w3id.org/workflowhub/workflow-ro-crate#snakemake",
+            "@type": "ComputerLanguage",
+            "identifier": {
+                "@id": "https://doi.org/10.1093/bioinformatics/bts480"
+            },
+            "name": "Snakemake",
+            "url": {
+                "@id": "https://snakemake.readthedocs.io"
+            },
+            "version": "6.5.0"
+        },
+        {
+            "@id": "images/rulegraph.svg",
+            "@type": [
+                "File",
+                "ImageObject"
+            ],
+            "name": "Workflow diagram"
+        },
+        {
+            "@id": "#d070f960-d370-496b-b4c8-151e385033b0",
+            "@type": "TestSuite",
+            "instance": [
+                {
+                    "@id": "#299faffb-9166-4b08-8504-bb51cd1fe0b9"
+                }
+            ],
+            "mainEntity": {
+                "@id": "workflow/Snakefile"
+            },
+            "name": "Test suite for fair-crcc-send-data"
+        },
+        {
+            "@id": "#299faffb-9166-4b08-8504-bb51cd1fe0b9",
+            "@type": "TestInstance",
+            "name": "GitHub Actions workflow for testing fair-crcc-send-data",
+            "resource": "repos/crs4/fair-crcc-send-data/actions/workflows/main.yml",
+            "runsOn": {
+                "@id": "https://w3id.org/ro/terms/test#GithubService"
+            },
+            "url": "https://api.github.com"
+        },
+        {
+            "@id": "https://w3id.org/ro/terms/test#GithubService",
+            "@type": "TestService",
+            "name": "Github Actions",
+            "url": {
+                "@id": "https://github.com"
+            }
+        },
+        {
+            "@id": ".tests/integration/",
+            "@type": "Dataset",
+            "description": "Integration tests for the workflow"
+        },
+        {
+            "@id": "workflow/",
+            "@type": "Dataset",
+            "description": "Workflow folder"
+        },
+        {
+            "@id": "config/",
+            "@type": "Dataset",
+            "description": "Configuration folder"
+        },
+        {
+            "@id": "workflow/rules/",
+            "@type": "Dataset",
+            "description": "Workflow rule modules"
+        },
+        {
+            "@id": "workflow/scripts/",
+            "@type": "Dataset",
+            "description": "Scripts folder"
+        },
+        {
+            "@id": "workflow/schemas/",
+            "@type": "Dataset",
+            "description": "Validation files"
+        },
+        {
+            "@id": "README.md",
+            "@type": "File"
+        },
+        {
+            "@id": "LICENSE",
+            "@type": "File"
+        }
+    ]
+}
