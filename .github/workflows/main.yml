@@ -7,43 +7,34 @@ on:
     branches: [ main ]
 
 jobs:
-  #Linting:
-  #  runs-on: ubuntu-latest
-  #  # The linter erroneously picks up something as an error, so we ignore its failure
-  #  continue-on-error: true
-  #  steps:
-  #    - uses: actions/checkout@v2
-  #    - name: Lint workflow
-  #      uses: snakemake/snakemake-github-action@v1.24.0
-  #      with:
-  #        directory: .tests/integration/test-1
-  #        snakefile: workflow/Snakefile
-  #        args: "--configfile .tests/integration/test-1/config.yml --lint"
-
   Testing:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        snakemake-version: ["6.12.3"]
+        snakemake-version: ["7.15.2", "6.15.5"]
+        python-version: ["3.10"]
+        singularity-version: ["3.10.3"]
+
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-      - name: Install singularity
-        run: |
-          curl --output /tmp/singularity-ce.deb --location \
-              https://github.com/sylabs/singularity/releases/download/v3.9.4/singularity-ce_3.9.4-focal_amd64.deb && \
-          sudo apt update -y && \
-          sudo apt install -y /tmp/singularity-ce.deb
+    - name: Install singularity
+      run: |
+        curl --output /tmp/singularity-ce.deb --location \
+            "https://github.com/sylabs/singularity/releases/download/v${{ matrix.singularity-version }}/singularity-ce_${{ matrix.singularity-version }}-focal_amd64.deb" && \
+        sudo apt update -y && \
+        sudo apt install -y /tmp/singularity-ce.deb
 
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: "3.10"
-          mamba-version: "*"
-          channels: bioconda,conda-forge,defaults
-          channel-priority: true
-          miniforge-variant: "Mambaforge"
-          miniforge-version: "4.11.0-0"
-          use-mamba: true
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v2.1.1
+      with:
+        python-version: ${{ matrix.python-version }}
+        mamba-version: "*"
+        channels: bioconda,conda-forge,defaults
+        channel-priority: true
+        miniforge-variant: "Mambaforge"
+        miniforge-version: "4.14.0-0"
+        use-mamba: true
 
       - name: start minio
         run: docker-compose -f .tests/integration/docker-compose.yml up -d
@@ -60,12 +51,20 @@ jobs:
             sleep 5
           done
 
-      - name: mamba install dependencies
-        shell: bash -l {0}
-        run: |
-          mamba install \
-            snakemake-minimal==${{ matrix.snakemake-version }} \
-            networkx pygraphviz boto3
+    - name: mamba install dependencies
+      shell: bash -l {0}
+      # LP: as of 2022-10-27 we have to pin the tabulate package to a version < 0.9
+      # to work around a snakemake issue #1892.
+      run: |
+        mamba install \
+          'tabulate<0.9' \
+          snakemake-minimal==${{ matrix.snakemake-version }} \
+          boto3 \
+          boto3 \
+          networkx \
+          pygraphviz \
+          pytest \
+          python-crypt4gh
 
       - name: pip install Python dependencies
         shell: bash -l {0}
