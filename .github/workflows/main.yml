@@ -60,7 +60,6 @@ jobs:
           'tabulate<0.9' \
           snakemake-minimal==${{ matrix.snakemake-version }} \
           boto3 \
-          boto3 \
           networkx \
           pygraphviz \
           pytest \

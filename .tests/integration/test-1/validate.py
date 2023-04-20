@@ -6,6 +6,7 @@ import tempfile
 
 from pathlib import Path
 from typing import Any, Mapping
+from collections.abc import Sequence
 
 import boto3
 import yaml
@@ -44,7 +45,7 @@ def download_file(remote_name: str, local_dir: Path, dest_config: Mapping[str, A
     return local_path
 
 
-def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> str:
+def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> bytes:
     path = download_file(remote_name, tmpdir, config['destination'])
     with open(path) as index_fp, tempfile.TemporaryFile() as output_fp:
         subprocess.check_call(
@@ -55,7 +56,7 @@ def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[
         return output_fp.read()
 
 
-def fetch_index(private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> Path:
+def fetch_index(private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> Sequence[Sequence[str]]:
     contents = fetch_and_decrypt_file('index.tsv.c4gh', private_key, config, tmpdir)
     index = [line.split('\t') for line in contents.decode().splitlines()]
     return index
@@ -71,14 +72,17 @@ def main():
         # Fetch and decrypt index.  Verify that its contents seem reasonable
         index = fetch_index(private_key, cfg, tmpdir)
         print("Fetched and decrypted index.", file=sys.stderr)
-        assert len(index) == 1, f"{len(index)} != 1"
-        index_entry = index[0]
-        assert len(index_entry) == 3, f"{len(index_entry)} != 3"
-        assert index_entry[0].endswith('.c4gh'), f"{index_entry[0]} does not end with .c4gh"
-        assert index_entry[1].endswith(test_file.name + '.c4gh'), f"{index_entry[1]} does not end with test file name"
+        assert len(index) == 4, f"{len(index)} != 4"
 
-        data = fetch_and_decrypt_file(index_entry[0], private_key, cfg, tmpdir).decode()
-        print("Fetched and decrypted data file", index_entry[0], file=sys.stderr)
+        # now find the row for test_file in index
+        row = next((row for row in index if row[1].startswith(test_file.name)), None)
+        assert row is not None
+        assert len(row) == 3, f"{len(row)} != 3"
+        assert row[0].endswith('.c4gh'), f"{row[0]} does not end with .c4gh"
+        assert row[1].endswith(test_file.name + '.c4gh'), f"{row[1]} does not end with test file name"
+
+        data = fetch_and_decrypt_file(row[0], private_key, cfg, tmpdir).decode()
+        print("Fetched and decrypted data file", row[0], file=sys.stderr)
         with open(test_file) as tf:
             original_data = tf.read()
         assert data == original_data, f"{data} != {original_data}"
