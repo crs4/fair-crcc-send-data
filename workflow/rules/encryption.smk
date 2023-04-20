@@ -15,7 +15,7 @@ rule encrypt_index:
     log:
         "logs/index.tsv.c4gh.log",
     benchmark:
-        "benchmark/index.tsv.c4gh.bench"
+        "bench/index.tsv.c4gh.bench"
     params:
         recipient_key=config["recipient_key"],
         master_pk=get_repository_path() / config["repository"]["private_key"],
@@ -45,7 +45,7 @@ rule reencrypt:
     log:
         "logs/{filename}.c4gh.log",
     benchmark:
-        "benchmark/{filename}.c4gh.bench"
+        "bench/{filename}.c4gh.bench"
     params:
         checksum_alg = 256,
         recipient_key = config["recipient_key"],

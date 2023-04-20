@@ -6,6 +6,7 @@ import tempfile
 
 from pathlib import Path
 from typing import Any, Mapping
+from collections.abc import Sequence
 
 import boto3
 import yaml
@@ -44,7 +45,7 @@ def download_file(remote_name: str, local_dir: Path, dest_config: Mapping[str, A
     return local_path
 
 
-def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> str:
+def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> bytes:
     path = download_file(remote_name, tmpdir, config['destination'])
     with open(path) as index_fp, tempfile.TemporaryFile() as output_fp:
         subprocess.check_call(
@@ -55,7 +56,7 @@ def fetch_and_decrypt_file(remote_name: str, private_key: Path, config: Mapping[
         return output_fp.read()
 
 
-def fetch_index(private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> Path:
+def fetch_index(private_key: Path, config: Mapping[str, Any], tmpdir: Path) -> Sequence[Sequence[str]]:
     contents = fetch_and_decrypt_file('index.tsv.c4gh', private_key, config, tmpdir)
     index = [line.split('\t') for line in contents.decode().splitlines()]
     return index
