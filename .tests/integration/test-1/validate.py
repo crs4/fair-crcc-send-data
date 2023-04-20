@@ -72,14 +72,17 @@ def main():
         # Fetch and decrypt index.  Verify that its contents seem reasonable
         index = fetch_index(private_key, cfg, tmpdir)
         print("Fetched and decrypted index.", file=sys.stderr)
-        assert len(index) == 1, f"{len(index)} != 1"
-        index_entry = index[0]
-        assert len(index_entry) == 3, f"{len(index_entry)} != 3"
-        assert index_entry[0].endswith('.c4gh'), f"{index_entry[0]} does not end with .c4gh"
-        assert index_entry[1].endswith(test_file.name + '.c4gh'), f"{index_entry[1]} does not end with test file name"
+        assert len(index) == 4, f"{len(index)} != 4"
 
-        data = fetch_and_decrypt_file(index_entry[0], private_key, cfg, tmpdir).decode()
-        print("Fetched and decrypted data file", index_entry[0], file=sys.stderr)
+        # now find the row for test_file in index
+        row = next((row for row in index if row[1].startswith(test_file.name)), None)
+        assert row is not None
+        assert len(row) == 3, f"{len(row)} != 3"
+        assert row[0].endswith('.c4gh'), f"{row[0]} does not end with .c4gh"
+        assert row[1].endswith(test_file.name + '.c4gh'), f"{row[1]} does not end with test file name"
+
+        data = fetch_and_decrypt_file(row[0], private_key, cfg, tmpdir).decode()
+        print("Fetched and decrypted data file", row[0], file=sys.stderr)
         with open(test_file) as tf:
             original_data = tf.read()
         assert data == original_data, f"{data} != {original_data}"
