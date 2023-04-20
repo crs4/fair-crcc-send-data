@@ -62,7 +62,7 @@ def create_remote_provider(destination_config: Mapping[str, str]) -> AbstractRem
         "ncbi": "NCBI",
         "s3": "S3",
         "sftp": "SFTP",
-        "webdav": "",
+        "webdav": "webdav",
         "xrootd": "XRootD",
     }
 
@@ -121,7 +121,7 @@ def get_original_item_name(new_name: str) -> str:
 
     Can only be used in `input:` sections as it accesses checkpoints.
     """
-    global _gRenameIndexCache  # defined in index.smk
+    global _gRenameIndexCache
     with _gRenameIndexLock:
         if _gRenameIndexCache is None:
             with checkpoints.gen_rename_index.get().output.index.open() as f:
