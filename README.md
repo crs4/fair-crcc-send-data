@@ -10,11 +10,13 @@ Cohort](https://www.bbmri-eric.eu/scientific-collaboration/colorectal-cancer-coh
 to a destination approved through a successful [access
 request](https://www.bbmri-eric.eu/services/access-policies/).
 
-The recommendation is to create a directory for the request that has been
-approved;  it will be used as the working directory for the run.  Copy there the
-recipient's crypt4gh key and prepare the run configuration.  The configuration
-will specify the repository, the destination of the data, and the list of
-files/directories to transfer.
+The recommendation is to create a working directory for the request that has been
+approved.  Copy there the recipient's crypt4gh key and prepare the run configuration.
+The configuration will specify the repository, the destination of the data, and the
+list of files/directories to transfer.
+
+The recipient will be able to download and decrypt the sent data with the companion
+[fair-crcc-get-data workflow](https://github.com/crs4/fair-crcc-get-data).
 
 
 ## What's the CRC Cohort?
